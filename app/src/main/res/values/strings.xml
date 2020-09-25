@@ -34,10 +34,20 @@
     \nClicking "Reenable" below will restore those privileges.\n
     \nClicking "Reinstall" below will install the application from the source named below (and reenable it).\n
     \nIt is difficult, but not impossible, to remove this application from your device, and
-    doing so has potential serious negative consequences.
+    doing so has potential undesirable consequences.
     \nSee https://foo/bar for details on how and when to do that.
     </string>
-    <string name="clear_it">Clear it</string>
-    <string name="refresh">refresh</string>
+    <string name="clear_it">Clear Owner</string>
+    <string name="refresh">Refresh</string>
     <string name="wipe_it">Wipe it</string>
+    <string name="is_device_owner">owner</string>
+    <string name="not_device_owner">not owner</string>
+    <string name="wipe_from_settings">Must wipe\nfrom settings.</string>
+    <string name="drop_device_owner_warning">Once the Device Owner privilege has been dropped, it is difficult to regain.
+        Be sure you want to do that.\nSee the link in the text window for details.</string>
+    <string name="clear_device_owner">Clear Device Owner Privilege</string>
+    <string name="continue_clearing">Continue Clearing</string>
+    <string name="reinstall_app">Reinstall App</string>
+    <string name="reenable_locking">Reenable Locking</string>
+    <string name="application_info">Application Info:</string>
 </resources>

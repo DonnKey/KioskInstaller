@@ -65,22 +65,20 @@ public class KioskInstallerDeviceAdmin extends DeviceAdminReceiver {
     @Override
     public void onProfileProvisioningComplete(@NonNull Context context, @NonNull Intent intent) {
         super.onProfileProvisioningComplete(context, intent);
-        //?????????????? does this get called from ADB?
         //Toast.makeText(context, "Complete", Toast.LENGTH_LONG).show();
 
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
         final PersistableBundle bundle = intent.getParcelableExtra(DevicePolicyManager.EXTRA_PROVISIONING_ADMIN_EXTRAS_BUNDLE);
         if (bundle != null) {
-            Log.w(APP_TAG + TAG, "got a bundle");
-            //Toast.makeText(this, "Got a bundle", Toast.LENGTH_LONG).show();
             // Capture the package and location names (and debug flag).
+
             String packageName = bundle.getString("packageName");
             String installLocation = bundle.getString("installLocation");
-            String e = bundle.getString("enableWipe");
-            boolean enableWipe = e!= null && e.equalsIgnoreCase("true");
+            String s = bundle.getString("debugMode");
+            boolean enableDebug = s != null && s.equalsIgnoreCase("true");
             sharedPreferences.edit().putString(KEY_PACKAGE_NAME, packageName).apply();
             sharedPreferences.edit().putString(KEY_INSTALL_LOCATION, installLocation).apply();
-            sharedPreferences.edit().putBoolean(KEY_ENABLE_DEBUG, enableWipe).commit();
+            sharedPreferences.edit().putBoolean(KEY_ENABLE_DEBUG, enableDebug).commit();
 
             // Make the app able to lock... this works even when the package isn't installed yet
             enablePackageLock(context, packageName);
@@ -93,55 +91,46 @@ public class KioskInstallerDeviceAdmin extends DeviceAdminReceiver {
         }
     }
 
-    /*
     @Override
     public void onEnabled(@NonNull Context context, @NonNull Intent intent) {
-        Log.w(APP_TAG + TAG, "onEnabled complete");
+        // Called when permission is changed from adb dpm... reflect the new state
+        KioskInstall.refresh();
     }
 
     @Override
     public void onDisabled(@NonNull Context context, @NonNull Intent intent) {
-        Log.w(APP_TAG + TAG, "onDisabled (owner)");
+        // Called when permission is changed from adb dpm... reflect the new state
+        KioskInstall.refresh();
     }
-     */
 
-    private void enablePackageLock(Context context, String packageName) {
+    static void enablePackageLock(Context context, String packageName) {
         final String[] packageNames = {packageName};
         DevicePolicyManager dpm =
                 (DevicePolicyManager) context.getSystemService(Context.DEVICE_POLICY_SERVICE);
         ComponentName adminName = new ComponentName(context,KioskInstallerDeviceAdmin.class);
-        Log.w(APP_TAG + TAG, "Comp name 2" + adminName);
         assert dpm != null;
         try {
-            Log.w(APP_TAG + TAG, "doing set");
             dpm.setLockTaskPackages(adminName, packageNames);
-            Log.w(APP_TAG + TAG, "set succeeded");
         } catch (SecurityException e) {
-            Log.w(APP_TAG + TAG, "set failed with " + e.getMessage());
+            Log.e(APP_TAG + TAG, "set failed with " + e.getMessage());
         }
     }
 
-    static
-    void startPlayStore(Context context, String packageName, String installLocation) {
+    static void startPlayStore(Context context, String packageName, String installLocation) {
         switch (checkPlayInstalled(context, packageName)) {
             case NOT_INSTALLED:
                 Log.w(APP_TAG + TAG, "Not installed");
                 Intent i = new Intent(Intent.ACTION_VIEW, Uri.parse(installLocation));
                 try {
                     context.startActivity(i);
-                    Log.w(APP_TAG + TAG, "Intent going");
                 } catch (ActivityNotFoundException e) {
-                    Log.e(APP_TAG + TAG, "Activity Not found");
                     e.printStackTrace();
                 }
                 break;
             case INSTALLED_MANUALLY:
-                Log.w(APP_TAG + TAG, "manually installed, not...");
             case INSTALLED_BY_PLAY:
-                Log.w(APP_TAG + TAG, "By play");
                 break;
         }
-
     }
 
     public static int checkPlayInstalled(Context context, String targetPackage) {
@@ -188,16 +177,6 @@ public class KioskInstallerDeviceAdmin extends DeviceAdminReceiver {
             dpm.clearDeviceOwnerApp(context.getPackageName());
             ComponentName adminComponentName = new ComponentName(context, KioskInstallerDeviceAdmin.class);
             dpm.removeActiveAdmin(adminComponentName);
-        }
-
-        static void enableLockTask(@NonNull Context context) {
-            DevicePolicyManager dpm =
-                    (DevicePolicyManager) context.getSystemService(Context.DEVICE_POLICY_SERVICE);
-            ComponentName adminComponentName = new ComponentName(context, KioskInstallerDeviceAdmin.class);
-            assert dpm != null;
-            if (dpm.isAdminActive(adminComponentName) &&
-                   dpm.isDeviceOwnerApp(context.getPackageName()))
-                dpm.setLockTaskPackages(adminComponentName, new String[]{context.getPackageName()});
         }
     }
 }

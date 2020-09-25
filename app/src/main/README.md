@@ -33,7 +33,7 @@ reset. (Hopefully you won't have too many tries since I did that.) It **must be*
 of the APK. It will refuse to install otherwise, with an unhelpful error.
 And the checksum must match, although the error is clear if you make that mistake.
 
-The "enableWipe" entry below is for testing. Don't ship it to your customers (just omit it and the prior comma),
+The "enableDebug" entry below is for testing. Don't ship it to your customers (just omit it and the prior comma),
 but it's very handy to allow you to cause a factory reset with a single click while you're testing.
 (You could also simply turn that off in production builds, of course.)
 
@@ -64,7 +64,7 @@ because FRP may bite you on the next test cycle.
 {  
 "packageName":"com.yourPackageName.yourKioskApp",  
 "installLocation":"https://play.google.com/store/apps/details?id=com.yourPackageName.yourKioskApp",  
-"enableWipe":true  
+"enableDebug":true
 }   
 }
 ```
@@ -84,7 +84,7 @@ because FRP may bite you on the next test cycle.
   {
    "packageName":"github.io.donnKey.aesopPlayer",
    "installLocation":"https://play.google.com/store/apps/details?id=github.io.donnKey.aesopPlayer",
-   "enableWipe":true
+   "enableDebug":true
   }
 }
 ```
@@ -103,6 +103,11 @@ because FRP may bite you on the next test cycle.
   {
    "packageName":"github.io.donnKey.aesopPlayer",
    "installLocation":"https://play.google.com/store/apps/details?id=github.io.donnKey.aesopPlayer",
-   "enableWipe":true
+   "enableDebug":true
   }
 }
+
+adb shell dpm set-device-owner com.donnKey.kioskInstaller/com.donnKey.kioskInstaller.KioskInstallerDeviceAdmin
+
+adb -s LGH872c2437b1 shell dpm set-device-owner com.donnKey.kioskInstaller/com.donnKey.kioskInstaller.KioskInstallerDeviceAdmin
+

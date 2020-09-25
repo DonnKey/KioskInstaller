@@ -31,91 +31,98 @@
     android:layout_height="match_parent"
     tools:context=".KioskInstall">
 
-    <!--
-    <LinearLayout
+    <RelativeLayout
         android:id="@+id/topGroup"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        app:layout_constraintBottom_toTopOf="@id/package_name"
+        android:layout_marginBottom="8dp"
+        app:layout_constraintBottom_toTopOf="@id/application_name"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_chainStyle="spread_inside">
 
-        <Space
-            android:id="@+id/spacer"
-            android:layout_width="wrap_content"
-            android:layout_height="40dp" />
+        <HorizontalScrollView
+            android:id="@+id/scroll_view"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:id="@+id/log_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:autoLink="web"
+                android:gravity="bottom"
+                android:lines="21"
+                android:paddingStart="10dp"
+                android:paddingEnd="10dp"
+                android:scrollbars="vertical"
+                android:scrollHorizontally="true"
+                tools:text="Hello World 1!" />
+
+        </HorizontalScrollView>
 
         <TextView
             android:id="@+id/introduction"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:autoLink="web"
-            android:maxLines="20"
+            android:gravity="top"
+            android:lines="21"
             android:paddingStart="10dp"
             android:paddingEnd="10dp"
-            tools:text="Hello World 1!" />
-    </LinearLayout>
-    -->
-    <HorizontalScrollView
-        android:id="@+id/topGroup"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        app:layout_constraintBottom_toTopOf="@id/package_name"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_chainStyle="spread_inside">
+            android:text="@string/introduction" />
+
+    </RelativeLayout>
 
     <TextView
-        android:id="@+id/introduction"
+        android:id="@+id/application_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:scrollHorizontally="true"
-        android:autoLink="web"
-        android:maxLines="20"
-        android:paddingStart="10dp"
-        android:paddingEnd="10dp"
-        tools:text="Hello World 1!" />
-
-    </HorizontalScrollView>
+        android:text="@string/application_info"
+        android:textSize="10pt"
+        app:layout_constraintBottom_toTopOf="@id/package_name"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/topGroup" />
 
     <EditText
         android:id="@+id/package_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:importantForAutofill="no"
+        android:inputType="text"
         app:layout_constraintBottom_toTopOf="@id/install_location"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/topGroup"
-        tools:text="Hello World 2!"
+        app:layout_constraintTop_toBottomOf="@id/application_name"
         tools:ignore="LabelFor"
-        android:inputType="text"
-        android:importantForAutofill="no" />
+        tools:text="Package Name" />
 
     <EditText
         android:id="@+id/install_location"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:importantForAutofill="no"
+        android:inputType="text"
         app:layout_constraintBottom_toTopOf="@id/button_clearOwner"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/package_name"
-        tools:text="Hello World 3!"
         tools:ignore="LabelFor"
-        android:inputType="text"
-        android:importantForAutofill="no" />
+        tools:text="Install Location" />
 
     <Button
         android:id="@+id/button_clearOwner"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="24dp"
         android:text="@string/clear_it"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/button_reenable"
         app:layout_constraintEnd_toStartOf="@id/button_refresh"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/install_location" />
@@ -140,6 +147,29 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/button_refresh"
         app:layout_constraintTop_toTopOf="@id/button_clearOwner"
+        />
+
+    <Button
+        android:id="@+id/button_reenable"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="24dp"
+        android:text="@string/reenable_locking"
+        app:layout_constraintHorizontal_chainStyle="spread"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/button_reinstall"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/button_clearOwner" />
+
+    <Button
+        android:id="@+id/button_reinstall"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/reinstall_app"
+        app:layout_constraintBottom_toBottomOf="@id/button_reenable"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/button_reenable"
+        app:layout_constraintTop_toTopOf="@id/button_reenable"
         />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
