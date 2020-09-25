@@ -52,7 +52,7 @@
                 android:layout_height="wrap_content"
                 android:autoLink="web"
                 android:gravity="bottom"
-                android:maxLines="20"
+                android:maxLines="10"
                 android:paddingStart="10dp"
                 android:paddingEnd="10dp"
                 android:scrollbars="vertical"
@@ -67,7 +67,7 @@
             android:layout_height="wrap_content"
             android:autoLink="web"
             android:gravity="top"
-            android:maxLines="20"
+            android:maxLines="10"
             android:paddingStart="10dp"
             android:paddingEnd="10dp"
             android:text="@string/introduction" />
@@ -94,8 +94,8 @@
             android:id="@+id/application_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textColor="@android:color/black"
             android:text="@string/application_info"
+            android:textColor="@android:color/black"
             android:textSize="10pt"
             />
 
@@ -104,7 +104,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="4dp"
-            android:layout_marginStart="16dp"
+            android:layout_marginStart="10dp"
             android:importantForAutofill="no"
             android:singleLine="true"
             tools:ignore="LabelFor"
@@ -115,7 +115,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="4dp"
-            android:layout_marginStart="16dp"
+            android:layout_marginStart="10dp"
             android:importantForAutofill="no"
             android:singleLine="true"
             tools:ignore="LabelFor"
@@ -140,10 +140,12 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/clear_it"
-        app:layout_constraintBottom_toTopOf="@id/button_reenable"
+        android:layout_marginBottom="12dp"
+        app:layout_constraintTop_toBottomOf="@id/divider"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@id/button_refresh"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/divider" />
+        />
 
     <Button
         android:id="@+id/button_refresh"
@@ -151,9 +153,9 @@
         android:layout_height="wrap_content"
         android:text="@string/refresh"
         app:layout_constraintBottom_toBottomOf="@id/button_clearOwner"
+        app:layout_constraintTop_toTopOf="@id/button_clearOwner"
         app:layout_constraintEnd_toStartOf="@id/button_wipe"
         app:layout_constraintStart_toEndOf="@id/button_clearOwner"
-        app:layout_constraintTop_toTopOf="@id/button_clearOwner"
         />
 
     <Button
@@ -162,32 +164,31 @@
         android:layout_height="wrap_content"
         android:text="@string/wipe_it"
         app:layout_constraintBottom_toBottomOf="@id/button_clearOwner"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@id/button_refresh"
         app:layout_constraintTop_toTopOf="@id/button_clearOwner"
+        app:layout_constraintStart_toEndOf="@id/button_refresh"
+        app:layout_constraintEnd_toStartOf="@id/button_reenable"
         />
 
     <Button
         android:id="@+id/button_reenable"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="24dp"
         android:text="@string/reenable_locking"
-        app:layout_constraintHorizontal_chainStyle="spread"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toBottomOf="@id/button_clearOwner"
+        app:layout_constraintTop_toTopOf="@id/button_clearOwner"
+        app:layout_constraintStart_toEndOf="@id/button_wipe"
         app:layout_constraintEnd_toStartOf="@id/button_reinstall"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/button_clearOwner" />
+        />
 
     <Button
         android:id="@+id/button_reinstall"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/reinstall_app"
-        app:layout_constraintBottom_toBottomOf="@id/button_reenable"
+        app:layout_constraintBottom_toBottomOf="@id/button_clearOwner"
+        app:layout_constraintTop_toTopOf="@id/button_clearOwner"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/button_reenable"
-        app:layout_constraintTop_toTopOf="@id/button_reenable"
         />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -7,6 +7,8 @@
   </component>
   <component name="EntryPointsManager">
     <entry_points version="2.0">
+      <entry_point TYPE="field" FQNAME="com.donnKey.kioskInstaller.KioskInstall message4" />
+      <entry_point TYPE="field" FQNAME="com.donnKey.kioskInstaller.KioskInstall TAG" />
     </entry_points>
     <pattern value="com.donnKey.kioskInstaller.ExampleUnitTest" method="addition_isCorrect" />
     <pattern value="com.donnKey.kioskInstaller.KioskInstallerDeviceAdmin.API21" />

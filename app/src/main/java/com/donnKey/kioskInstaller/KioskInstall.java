@@ -38,10 +38,8 @@ import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.method.ScrollingMovementMethod;
 import android.text.style.BackgroundColorSpan;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.TextView;
 
 import org.apache.commons.io.IOUtils;
@@ -82,8 +80,8 @@ public class KioskInstall extends AppCompatActivity {
 
     TextView introduction_field;
     TextView logText_field;
-    EditText packageName_field;
-    EditText installLocation_field;
+    TextView packageName_field;
+    TextView installLocation_field;
     Button button_clearOwner;
     Button button_wipe;
     Button button_refresh;
@@ -155,7 +153,6 @@ public class KioskInstall extends AppCompatActivity {
             button_wipe.setVisibility(View.VISIBLE);
             AccountManager am = AccountManager.get(this);
             Account[] accounts = am.getAccounts();
-            Log.w(TAG, "Number of accounts " + accounts.length);
             // Set up button to factory reset easily while testing
             if (accounts.length <= 0 && KioskInstallerDeviceAdmin.isDeviceOwner(this)) {
                 button_wipe.setOnClickListener((v) -> {
