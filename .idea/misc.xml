@@ -21,7 +21,7 @@
     <pattern value="com.donnKey.kioskInstaller.ExampleInstrumentedTest" method="useAppContext" />
   </component>
   <component name="ProjectPlainTextFileTypeManager">
-    <file url="file://$PROJECT_DIR$/app/src/main/README.md" />
+    <file url="file://$PROJECT_DIR$/README.md" />
   </component>
   <component name="ProjectRootManager" version="2" languageLevel="JDK_1_8" project-jdk-name="JDK" project-jdk-type="JavaSDK">
     <output url="file://$PROJECT_DIR$/build/classes" />
