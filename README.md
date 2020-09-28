@@ -6,7 +6,7 @@ KioskInstaller is a small, simple-seeming, program to install an application, li
 Google Play Store, and give it the permissions to be able to lock the screen into Kiosk Mode.
 (A.k.a Lock Screen mode.)
 
-###Background
+### Background
 
 A Kiosk Mode application locks the screen so that you can't get out of the application, which is
 needed in certain business situations, or if it is required to keep accidental button pushes from causing
@@ -21,7 +21,7 @@ PC/cables/software alternative. Thus this is a solution for "Dedicated Devices" 
 
 For many devices the permissions can be granted by using a special program called a DPC (Device Policy Controller),
 which must be installed just after a Factory Reset (but at no other time!).
-The DPC can be installed using NFC or (on newer devices) QR codes (on devices with the appropriate hardware).
+The DPC can be installed using or (on newer devices) QR codes (on devices with the appropriate hardware).
 The details for using the NFC sender app are on its web page. //?????????? (NFC link)
 Setting up QR codes is discussed below.
 Google provides this capability for business use, but it works fine for any application needing to use Kiosk mode
@@ -36,7 +36,7 @@ which can be found on this GitHub website. You can copy it to your own host to s
 This README is primarily for developers, since users really needn't be more than vaguely aware this program exists.
 The documentation for your application should provide the user-focused instructions. You can find an example //??? here.
 
-##Usage Overview
+## Usage Overview
 
 The process of installing a Kiosk Mode application (when not using PC/cable)
 requires that first you Factory Reset the device.
@@ -72,7 +72,7 @@ Note 2: Even if you don't intend to use NFC provisioning, just QR, you might wan
 application for your testing. It can save you the tedious process of re-entering the WiFi information for
 each trial.
 
-##Usage Details
+## Usage Details
 
 It is not possible to (usefully) put KioskInstaller into Play Store...
 it won't work because it can't be downloaded early enough.
@@ -98,7 +98,7 @@ In the simplest case, simply put the .apk for KioskInstaller where it can be dow
 the entries entries in the `.json` file, and you're ready to scan QR codes (or copy it
 onto the NFC provider).
 
-###The (User) UI
+### The (User) UI
 
 KioskInstaller does have a UI, and can be run from the Apps screen.
 The primary purpose of the UI is to tell the user to ignore KioskInstaller's existence, should they find it
@@ -122,7 +122,7 @@ restoring that privilege is very difficult. (The Device Owner is the only applic
 revoke the Device Owner privilege.)
 There's further, user-level, information about that at https:/?????????????
 
-##Building it yourself
+## Building it yourself
 
 You can of course take a branch and modify KioskInstaller as you wish.
 Although it's a simple application, getting the setup to build and debug it is tricky
