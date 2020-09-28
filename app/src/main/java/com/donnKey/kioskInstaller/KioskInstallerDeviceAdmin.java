@@ -24,7 +24,6 @@
 package com.donnKey.kioskInstaller;
 
 import android.annotation.SuppressLint;
-import android.annotation.TargetApi;
 import android.app.admin.DeviceAdminReceiver;
 import android.app.admin.DevicePolicyManager;
 import android.content.ActivityNotFoundException;
@@ -37,17 +36,18 @@ import android.net.Uri;
 import android.os.Handler;
 import android.os.PersistableBundle;
 import android.preference.PreferenceManager;
-import android.util.Log;
 
 import androidx.annotation.NonNull;
 
+import static com.donnKey.kioskInstaller.KioskInstall.ACTION_ERROR;
 import static com.donnKey.kioskInstaller.KioskInstall.APP_TAG;
 import static com.donnKey.kioskInstaller.KioskInstall.KEY_ENABLE_DEBUG;
 import static com.donnKey.kioskInstaller.KioskInstall.KEY_INSTALL_LOCATION;
 import static com.donnKey.kioskInstaller.KioskInstall.KEY_PACKAGE_NAME;
+import static com.donnKey.kioskInstaller.KioskInstall.KEY_UNEXPECTED_FAILURE;
 
 public class KioskInstallerDeviceAdmin extends DeviceAdminReceiver {
-    private static final String TAG = "DeviceAdmin";
+    private static final String TAG = APP_TAG + "DeviceAdmin";
 
     final static int NOT_INSTALLED = 0;
     final static int INSTALLED_MANUALLY = 1;
@@ -64,30 +64,53 @@ public class KioskInstallerDeviceAdmin extends DeviceAdminReceiver {
     @SuppressLint("ApplySharedPref")
     @Override
     public void onProfileProvisioningComplete(@NonNull Context context, @NonNull Intent intent) {
+        // This is the "important part" where the real work happens. Everything else is support.
         super.onProfileProvisioningComplete(context, intent);
         //Toast.makeText(context, "Complete", Toast.LENGTH_LONG).show();
 
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
-        final PersistableBundle bundle = intent.getParcelableExtra(DevicePolicyManager.EXTRA_PROVISIONING_ADMIN_EXTRAS_BUNDLE);
-        if (bundle != null) {
-            // Capture the package and location names (and debug flag).
+        try {
+            final PersistableBundle bundle = intent.getParcelableExtra(DevicePolicyManager.EXTRA_PROVISIONING_ADMIN_EXTRAS_BUNDLE);
+            if (bundle != null) {
+                // Capture the package and location names (and debug flag).
 
-            String packageName = bundle.getString("packageName");
-            String installLocation = bundle.getString("installLocation");
-            String s = bundle.getString("debugMode");
-            boolean enableDebug = s != null && s.equalsIgnoreCase("true");
-            sharedPreferences.edit().putString(KEY_PACKAGE_NAME, packageName).apply();
-            sharedPreferences.edit().putString(KEY_INSTALL_LOCATION, installLocation).apply();
-            sharedPreferences.edit().putBoolean(KEY_ENABLE_DEBUG, enableDebug).commit();
+                String packageName = bundle.getString("packageName");
+                if (packageName == null) {
+                    packageName = "";
+                }
+                String installLocation = bundle.getString("installLocation");
+                if (installLocation == null) {
+                    installLocation = "";
+                }
+                boolean enableDebug = false;
+                Object s = bundle.get("debugMode");
+                if (s != null) {
+                    enableDebug = s.toString().equalsIgnoreCase("true");
+                }
+                sharedPreferences.edit().putString(KEY_PACKAGE_NAME, packageName).apply();
+                sharedPreferences.edit().putString(KEY_INSTALL_LOCATION, installLocation).apply();
+                sharedPreferences.edit().putString(KEY_ENABLE_DEBUG, enableDebug?"true":"false").commit();
 
-            // Make the app able to lock... this works even when the package isn't installed yet
-            enablePackageLock(context, packageName);
+                // Make the app able to lock... this works even when the package isn't installed yet
+                if (!packageName.isEmpty()) {
+                    enablePackageLock(context, packageName);
+                }
 
-            // Start play store, but delay a bit... the intent doesn't always work
-            // if it happens (presumably) too soon in startup.
-            Handler handler = new Handler();
-            handler.postDelayed(
-                    () -> startPlayStore(context, packageName, installLocation) , 2000);
+                // Start play store, but delay a bit... the intent doesn't always work
+                // if it happens (presumably) too soon in startup.
+                if (!packageName.isEmpty() && !installLocation.isEmpty()) {
+                    Handler handler = new Handler();
+                    // To make the lambda happy:
+                    String pn = packageName;
+                    String il = installLocation;
+                    handler.postDelayed(() -> startPlayStore(context, pn, il), 2000);
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            // If a completely unexpected error, force it into debug mode.
+            // For expected errors, we just post a reasonable message
+            sharedPreferences.edit().putString(KEY_ENABLE_DEBUG, KEY_UNEXPECTED_FAILURE).commit();
         }
     }
 
@@ -107,24 +130,26 @@ public class KioskInstallerDeviceAdmin extends DeviceAdminReceiver {
         final String[] packageNames = {packageName};
         DevicePolicyManager dpm =
                 (DevicePolicyManager) context.getSystemService(Context.DEVICE_POLICY_SERVICE);
-        ComponentName adminName = new ComponentName(context,KioskInstallerDeviceAdmin.class);
         assert dpm != null;
+        ComponentName adminName = new ComponentName(context,KioskInstallerDeviceAdmin.class);
         try {
             dpm.setLockTaskPackages(adminName, packageNames);
         } catch (SecurityException e) {
-            Log.e(APP_TAG + TAG, "set failed with " + e.getMessage());
+            e.printStackTrace();
+            postError(context, "Unable to Lock " + packageName + ": " + e.getMessage());
+
         }
     }
 
     static void startPlayStore(Context context, String packageName, String installLocation) {
         switch (checkPlayInstalled(context, packageName)) {
             case NOT_INSTALLED:
-                Log.w(APP_TAG + TAG, "Not installed");
                 Intent i = new Intent(Intent.ACTION_VIEW, Uri.parse(installLocation));
                 try {
                     context.startActivity(i);
                 } catch (ActivityNotFoundException e) {
                     e.printStackTrace();
+                    postError(context, "Unable to Install " + packageName + " from " + installLocation + ": " + e.getMessage());
                 }
                 break;
             case INSTALLED_MANUALLY:
@@ -135,8 +160,6 @@ public class KioskInstallerDeviceAdmin extends DeviceAdminReceiver {
 
     public static int checkPlayInstalled(Context context, String targetPackage) {
         PackageManager manager = context.getPackageManager();
-        Intent launcherIntent = new Intent(Intent.ACTION_MAIN);
-        launcherIntent.addCategory(Intent.CATEGORY_LAUNCHER);
         try {
             manager.getPackageInfo(targetPackage, PackageManager.GET_ACTIVITIES);
         } catch (PackageManager.NameNotFoundException e) {
@@ -152,31 +175,30 @@ public class KioskInstallerDeviceAdmin extends DeviceAdminReceiver {
         }
     }
 
-    public static boolean isDeviceOwner(Context context) {
-        return API21.isDeviceOwner(context);
+    static void postError(Context context, String message) {
+        // Since the "important part" doesn't have a UI, borrow the debug UI
+        // to present "expected" errors. (Note the onDelay when starting the
+        // install... there's no chance of a UI when that runs, so we use
+        // bring up the UI via an intent to display the error)
+        Intent i = new Intent(context, KioskInstall.class);
+        i.setAction(ACTION_ERROR);
+        i.putExtra(ACTION_ERROR, message);
+        context.startActivity(i);
     }
 
-    public static void clearDeviceOwner(Context context) {
-        API21.clearDeviceOwnerAndAdmin(context);
+    static boolean isDeviceOwner(@NonNull Context context) {
+        DevicePolicyManager dpm =
+                (DevicePolicyManager) context.getSystemService(Context.DEVICE_POLICY_SERVICE);
+        assert dpm != null;
+        return dpm.isDeviceOwnerApp(context.getPackageName());
     }
 
-    @TargetApi(21)
-    private static class API21 {
-
-        static boolean isDeviceOwner(@NonNull Context context) {
-            DevicePolicyManager dpm =
-                    (DevicePolicyManager) context.getSystemService(Context.DEVICE_POLICY_SERVICE);
-            assert dpm != null;
-            return dpm.isDeviceOwnerApp(context.getPackageName());
-        }
-
-        static void clearDeviceOwnerAndAdmin(@NonNull Context context) {
-            DevicePolicyManager dpm =
-                    (DevicePolicyManager) context.getSystemService(Context.DEVICE_POLICY_SERVICE);
-            assert dpm != null;
-            dpm.clearDeviceOwnerApp(context.getPackageName());
-            ComponentName adminComponentName = new ComponentName(context, KioskInstallerDeviceAdmin.class);
-            dpm.removeActiveAdmin(adminComponentName);
-        }
+    static void clearDeviceOwner(@NonNull Context context) {
+        DevicePolicyManager dpm =
+                (DevicePolicyManager) context.getSystemService(Context.DEVICE_POLICY_SERVICE);
+        assert dpm != null;
+        dpm.clearDeviceOwnerApp(context.getPackageName());
+        ComponentName adminComponentName = new ComponentName(context, KioskInstallerDeviceAdmin.class);
+        dpm.removeActiveAdmin(adminComponentName);
     }
 }

@@ -30,6 +30,7 @@ import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.app.admin.DevicePolicyManager;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Environment;
@@ -66,6 +67,8 @@ public class KioskInstall extends AppCompatActivity {
     static final String KEY_PACKAGE_NAME = "package_name";
     static final String KEY_INSTALL_LOCATION = "install_location";
     static final String KEY_ENABLE_DEBUG = "enable_debug";
+    static final String KEY_UNEXPECTED_FAILURE = "failure";
+    static final String ACTION_ERROR = "KioskInstaller Error Message";
 
     static final String UNKNOWN_PLACEHOLDER = "Unknown";
     private static final String FILENAME = "LogFile";
@@ -76,7 +79,9 @@ public class KioskInstall extends AppCompatActivity {
 
     String packageName;
     String installLocation;
+    String errorMessage;
     boolean debugMode;
+    boolean enableWipe;
 
     TextView introduction_field;
     TextView logText_field;
@@ -99,6 +104,13 @@ public class KioskInstall extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        Intent intent = getIntent();
+        if (intent != null) {
+            if (intent.getAction() != null && intent.getAction().equals(ACTION_ERROR)) {
+                errorMessage = intent.getStringExtra(ACTION_ERROR);
+            }
+        }
+
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
 
         view = findViewById(android.R.id.content).getRootView();
@@ -108,7 +120,15 @@ public class KioskInstall extends AppCompatActivity {
 
         packageName = sharedPreferences.getString(KEY_PACKAGE_NAME, UNKNOWN_PLACEHOLDER);
         installLocation = sharedPreferences.getString(KEY_INSTALL_LOCATION, UNKNOWN_PLACEHOLDER);
-        debugMode = sharedPreferences.getBoolean(KEY_ENABLE_DEBUG, false);
+        String dm = sharedPreferences.getString(KEY_ENABLE_DEBUG, KEY_UNEXPECTED_FAILURE);
+        if (dm.equalsIgnoreCase(KEY_UNEXPECTED_FAILURE)) {
+            // Some data input error... display logcat, but disable (dangerous) wipe.
+            debugMode = true;
+            enableWipe = false;
+        } else {
+            debugMode = dm.equalsIgnoreCase("true");
+            enableWipe = debugMode;
+        }
 
         packageName_field = view.findViewById(R.id.package_name);
         installLocation_field = view.findViewById(R.id.install_location);
@@ -130,8 +150,14 @@ public class KioskInstall extends AppCompatActivity {
         super.onResume();
         myInstance= new WeakReference<>(this);
 
-        // Text window: description or debug text
-        if (debugMode) {
+        // Text window: error, description or debug text
+        if (errorMessage != null) {
+            enableWipe = false;
+            logText_field.setVisibility(View.GONE);
+            introduction_field.setVisibility(View.VISIBLE);
+            introduction_field.setText(errorMessage);
+        }
+        else if (debugMode) {
             // Get the current logcat output and display it.
             SpannableString ss = new SpannableString(captureLog());
             setHighLightedText(ss, APP_TAG);
@@ -149,7 +175,7 @@ public class KioskInstall extends AppCompatActivity {
         }
 
         // Wipe button
-        if (debugMode) {
+        if (enableWipe) {
             button_wipe.setVisibility(View.VISIBLE);
             AccountManager am = AccountManager.get(this);
             Account[] accounts = am.getAccounts();
