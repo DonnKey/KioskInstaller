@@ -35,7 +35,7 @@
     \nClicking "Reinstall" below will install the application from the source named below (and reenable it).\n
     \nIt is difficult, but not impossible, to remove this application from your device, and
     doing so has potential undesirable consequences.
-    \nSee https://foo/bar for details on how and when to do that.
+    \nSee <a href="https://donnkey.github.io/KioskInstaller/index.html#uninstalling_it">this page</a> for details on how and when to do that.
     </string>
     <string name="clear_it">Clear Owner</string>
     <string name="refresh">Refresh</string>

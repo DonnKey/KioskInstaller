@@ -65,7 +65,6 @@
             android:id="@+id/introduction"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:autoLink="web"
             android:gravity="top"
             android:maxLines="20"
             android:paddingStart="10dp"

@@ -37,6 +37,7 @@ import android.os.Environment;
 import android.preference.PreferenceManager;
 import android.text.Spannable;
 import android.text.SpannableString;
+import android.text.method.LinkMovementMethod;
 import android.text.method.ScrollingMovementMethod;
 import android.text.style.BackgroundColorSpan;
 import android.view.View;
@@ -120,8 +121,13 @@ public class KioskInstall extends AppCompatActivity {
 
         packageName = sharedPreferences.getString(KEY_PACKAGE_NAME, UNKNOWN_PLACEHOLDER);
         installLocation = sharedPreferences.getString(KEY_INSTALL_LOCATION, UNKNOWN_PLACEHOLDER);
-        String dm = sharedPreferences.getString(KEY_ENABLE_DEBUG, KEY_UNEXPECTED_FAILURE);
-        if (dm.equalsIgnoreCase(KEY_UNEXPECTED_FAILURE)) {
+        String dm = sharedPreferences.getString(KEY_ENABLE_DEBUG, UNKNOWN_PLACEHOLDER);
+        if (dm.equalsIgnoreCase(UNKNOWN_PLACEHOLDER)) {
+            // Never ran onProfileProvisioningComplete (probably test install)
+            debugMode = false;
+            enableWipe = false;
+        }
+        else if (dm.equalsIgnoreCase(KEY_UNEXPECTED_FAILURE)) {
             // Some data input error... display logcat, but disable (dangerous) wipe.
             debugMode = true;
             enableWipe = false;
@@ -172,6 +178,7 @@ public class KioskInstall extends AppCompatActivity {
             // Otherwise, self-describe
             logText_field.setVisibility(View.GONE);
             introduction_field.setVisibility(View.VISIBLE);
+            introduction_field.setMovementMethod(LinkMovementMethod.getInstance());
         }
 
         // Wipe button
