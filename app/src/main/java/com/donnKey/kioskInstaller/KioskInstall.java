@@ -34,7 +34,9 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Environment;
-import android.preference.PreferenceManager;
+
+import androidx.core.content.ContextCompat;
+import androidx.preference.PreferenceManager;
 import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.method.LinkMovementMethod;
@@ -223,9 +225,9 @@ public class KioskInstall extends AppCompatActivity {
                     .setNegativeButton(android.R.string.cancel, (a, b)-> {})
                     .show();
                 dialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(
-                        getResources().getColor(android.R.color.holo_red_dark));
+                        ContextCompat.getColor(this,android.R.color.holo_red_dark));
                 dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(
-                        getResources().getColor(android.R.color.holo_green_dark));
+                        ContextCompat.getColor(this,android.R.color.holo_green_dark));
             });
         }
 
@@ -348,8 +350,9 @@ public class KioskInstall extends AppCompatActivity {
         List<String> lines;
         try {
             InputStream in = new BufferedInputStream(new FileInputStream(logFile));
-            //noinspection unchecked
-            lines = IOUtils.readLines(in);
+            @SuppressWarnings("unchecked") // have to do it with the local to keep the compiler happy
+            List<String>t_lines = IOUtils.readLines(in);
+            lines = t_lines;
             in.close();
         } catch (IOException e) {
             return "Failure reading logcat data: " + stackTrace(e);

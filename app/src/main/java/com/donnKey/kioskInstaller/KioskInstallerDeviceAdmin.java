@@ -35,7 +35,7 @@ import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Handler;
 import android.os.PersistableBundle;
-import android.preference.PreferenceManager;
+import androidx.preference.PreferenceManager;
 
 import androidx.annotation.NonNull;
 
@@ -193,10 +193,13 @@ public class KioskInstallerDeviceAdmin extends DeviceAdminReceiver {
         return dpm.isDeviceOwnerApp(context.getPackageName());
     }
 
+    @SuppressWarnings({"deprecation", "RedundantSuppression"})
     static void clearDeviceOwner(@NonNull Context context) {
         DevicePolicyManager dpm =
                 (DevicePolicyManager) context.getSystemService(Context.DEVICE_POLICY_SERVICE);
         assert dpm != null;
+        // Deprecated API: for purposes of testing this is exactly what we need, and docs say it's
+        // OK for testing. (We don't want to wipe the device as they suggest).
         dpm.clearDeviceOwnerApp(context.getPackageName());
         ComponentName adminComponentName = new ComponentName(context, KioskInstallerDeviceAdmin.class);
         dpm.removeActiveAdmin(adminComponentName);
