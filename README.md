@@ -1,7 +1,5 @@
 Kiosk Installer
 ---------------
-NOT DONE YET... this is how it WILL be.
-
 KioskInstaller is a small, simple-seeming, program to install an application, likely using
 Google Play Store, and give it the permissions to be able to lock the screen into Kiosk Mode.
 (A.k.a Lock Screen mode.)
@@ -9,8 +7,9 @@ Google Play Store, and give it the permissions to be able to lock the screen int
 ### Background
 
 A Kiosk Mode application locks the screen so that you can't get out of the application, which is
-needed in certain business situations, or if it is required to keep accidental button pushes from causing
-a user (with possible physical or mental limitations) to effectively lose control of the device.
+needed in certain business situations, or (in our case) if it is required to keep accidental  
+button pushes from causing a user (with possible physical or mental limitations)  
+to effectively lose control of the device.
 
 To put an application into Kiosk Mode requires certain permissions. Those permissions are not easily granted.
 The "usual/historical" way required a PC, cables, and PC software, which is at best inconvenient for users.
@@ -20,9 +19,9 @@ If you don't want to Factory Reset your device, there doesn't appear to be any s
 PC/cables/software alternative. Thus this is a solution for "Dedicated Devices" only.
 
 For many devices the permissions can be granted by using a special program called a DPC (Device Policy Controller),
-which must be installed just after a Factory Reset (but at no other time!).
-The DPC can be installed using or (on newer devices) QR codes (on devices with the appropriate hardware).
-The details for using the NFC sender app are on its web page. //?????????? (NFC link)
+which must be installed just after a Factory Reset (but at no other time if you want the necessary permissions!).
+The DPC can be installed using NFC, or (on newer devices) QR codes (on devices with the appropriate hardware).
+The details for using the NFC sender app are on its web page. //?????????? (TBD NFC link)
 Setting up QR codes is discussed below.
 Google provides this capability for business use, but it works fine for any application needing to use Kiosk mode
 on a device dedicated to the purpose.
@@ -34,7 +33,9 @@ You don't need to build a copy of this application if you want it as-is; an alre
 which can be found on this GitHub website. You can copy it to your own host to serve it when installing.
 
 This README is primarily for developers, since users really needn't be more than vaguely aware this program exists.
-The documentation for your application should provide the user-focused instructions. You can find an example //??? here.
+The documentation for your application should provide the user-focused instructions.  
+You can find an example at
+[here](https://donnkey.github.io/aesopPlayer/install-dedicated.html).
 
 ## Usage Overview
 
@@ -45,13 +46,14 @@ When the device gets to the initial start screen, take an action to tell the dev
 install KioskInstaller which then "provisions" the device as needed.
 * For NFC installation you'll need another device running an application that provides the
 necessary information via NFC.
-You simply "bump" the devices to start things. (See this <????> NFC app for details.)
-* For QR installation tap the screen (in the same place, not on a button or text) 5 times to get into
+You simply "bump" the devices to start things. (See this <???? (TBD)> NFC app for details.)
+* For QR installation tap the screen (in the same place, not on a button or text) 6 times to get into
 QR provisioning state.
 Work through the steps (to set up WiFi) and it will ultimately load a QR camera app.
-Show the camera the QR code produced from the `.json` file below, and it will proceed with downloading
+Show the camera the QR code derived from the `.json` file below, and it will proceed with downloading
 and setting up Kiosk Mode for the application specified by the QR code.
-Android 7.0 and later support QR-mode provisioning.
+Android 7.0 and later support QR-mode provisioning, although not all
+device vendors have implemented it.
 
 Once everything is set up, KioskInstaller can take the user to Play Store where they can authenticate
 themselves and download the Kiosk Mode application in the usual way.
@@ -88,11 +90,16 @@ or convert it to a QR code. The section on the JSON script has details.
 If you use the .apk on this GitHub page for KioskInstaller, the `.json` file below is pre-populated with
 the checksum information needed to install it. If you build your own, see the section on Building it yourself below.
 
-You must fill in the values on the ...DOWNLOAD_LOCATION entry to locate your copy of KioskInstaller,
+You must fill in the values on the `...DOWNLOAD_LOCATION` entry to locate your copy of KioskInstaller,
 and `packageName` and `installLocation` to find the entry in the Store for your Kiosk Mode application.
 
-The web page [http://down-box.appspot.com/qr] is handy for creating the QR code,
+The web page [appspot.com](http://down-box.appsopt.com)
+is handy for creating the QR code,
 but any of several others on the Web will do.
+(Right click and download the image to put it in a web page.)
+(Downbox is simple, but not very secure, depending on your content.)
+(Recently I've noted something that appears to be phishing on the
+appspot website - there's a redirect that looks highly suspicious.)
 
 In the simplest case, simply put the .apk for KioskInstaller where it can be downloaded, fix
 the entries entries in the `.json` file, and you're ready to scan QR codes (or copy it
@@ -120,7 +127,6 @@ Pressing it when "Owner", and confirming in the dialog, removes the Device Owner
 This is necessary to completely remove KioskInstaller, but is otherwise discouraged because
 restoring that privilege is very difficult. (The Device Owner is the only application that can
 revoke the Device Owner privilege.)
-There's further, user-level, information about that at https:/?????????????
 
 ## Building it yourself
 
@@ -150,7 +156,7 @@ The sample .apk file is signed with a key that won't be used for any other purpo
 You must provide one of two forms of checksum in the `.json` file, either that of the package as a whole,
 or that of the signature.  If the checksum isn't correct, the errors are very clear.
 
-The ...SIGNATURE_CHECKSUM field is easier to use, because it doesn't change each time you rebuild the application.
+The `...SIGNATURE_CHECKSUM` field is easier to use, because it doesn't change each time you rebuild the application.
 The command below will compute the right value after you've built the .apk once.
 (Probably any version of apksigner.bat will work, that's the one I used.)
 (Be careful of the space after the ':', it should be there.)
@@ -158,22 +164,22 @@ The command below will compute the right value after you've built the .apk once.
 ${ANDROID_SDK_ROOT}/build-tools/28.0.2/apksigner.bat verify -print-certs -v kioskInstaller-release.apk | grep -Po "(?<=SHA-256 digest: ).*" -m 1 | xxd -r -p | openssl base64 | tr -- '+/' '-_' | tr -d '='
 ```
 
-The ...PACKAGE_CHECKSUM is generated using
+The `...PACKAGE_CHECKSUM` is generated using
 ```
 openssl dgst -binary -sha256 <kioskInstaller-release.apk | openssl base64 | tr '+/' '-_' | tr -d '='
 ```
-Replace the ...SIGNATURE_CHECKSUM with ...PACKAGE_CHECKSUM to use the package checksum.
+Replace the `...SIGNATURE_CHECKSUM` with `...PACKAGE_CHECKSUM` to use the package checksum.
 
 We noted above some possible solutions for serving the .apk,
 they all are a bit inconvenient for testing new builds.
 The Jekyll static web page hosting server works very nicely for that.
-You can install Jekyll from [https://jekyllrb.com/].
+You can install Jekyll from [https://jekyllrb.com/](https://jekyllrb.com/).
 Use `jekyll serve --host 0.0.0.0` to provide a local host, and put the executable in `release` under the directory
 in which you started Jekyll ("JekyllStuffDirectory" below).
 (It can go anywhere Jekyll allows it, but putting it in `release` lets you set up your Android Studio build
 to deliver it there directly.)
 
-In this case, the URL in DOWNLOAD_LOCATION should look like
+In this case, the URL in `DOWNLOAD_LOCATION` should look like
 `http://yourLocalHost:4000/JekyllStuffDirectory/release/kioskInstaller-release.apk`.
 
 To test the "important stuff" you'll need a real device that you can factory reset.
@@ -182,7 +188,7 @@ To test the "important stuff" you'll need a real device that you can factory res
 If all goes well, KioskInstaller will run (invisibly) just as the cold boot finishes, and
 the Play Store sign-in screen appear later (10-20 seconds).
 
-For the purpose of developer testing, the "enableDebug" flag is useful.
+For the purpose of developer testing, the `enableDebug` flag is useful.
 Just don't leave it in `.json` files your customers will use.
 It exists because the device won't be set up for debugging (not yet in "Developer" mode) and getting the logcat
 information for debugging can be painful each time you test it (particularly if it crashes).
@@ -199,7 +205,8 @@ This is very handy when testing repeatedly.
 * A long-press of the "Refresh" button clears the log file of "really old" stuff, but the subsequent
 read of logcat will restore more recent entries.
 
-If you start KioskInstaller as an ordinary application (when installed using the debugMode), you'll see the logcat data.
+If you start KioskInstaller as an ordinary application (when installed using the debugMode),  
+you'll see the logcat data.
 You can customise what you see by changing the logcat command line filters,
 as well as the filtering and enhancement KioskInstaller does.
 The code should be fairly obvious.
@@ -216,29 +223,33 @@ There's a commented source line to start that process if you need it.
 If the "important part" should crash with an unexpected error, it will enter a hybrid mode where the Wipe button
 is not available, but the logcat information is shown.
 
-Note: frequently Device Owner and Lock Mode are handled together in a Kiosk Mode application.
-That won't be the case here, so you should test your Kiosk Mode app carefully.
+Note: Device Owner and Lock Mode privileges historically might be handled as a single  
+entity in a Kiosk Mode application. (An easy situation to get into when
+using PC/Cable mode only.)
+That won't be the case here, so you should test your Kiosk Mode app carefully
+to see that they're appropriately separate.
 
 ### The JSON script
 
 A complete sample JSON script appears below:
-* You can use "PROVISIONING_DEVICE_ADMIN_PACKAGE_CHECKSUM" instead of "PROVISIONING_DEVICE_ADMIN_SIGNATURE_CHECKSUM"
+* You can use `PROVISIONING_DEVICE_ADMIN_PACKAGE_CHECKSUM` instead of `PROVISIONING_DEVICE_ADMIN_SIGNATURE_CHECKSUM`
 if you wish to provide the .apk checksum.
 * You need to change "yourLocalHost", "JekyllStuffDirectory", and the packageName and installLocation lines
 for all uses. Typically the installLocation would be a link into Play Store for your application.
-* You need to change the ...COMPONENT_NAME line if you're building your own version.
+* You need to change the `...COMPONENT_NAME` line if you're building your own version.
 * Other lines are set to normal/useful defaults, but you could add or delete or change them as appropriate based
-on the Android documentation. A good place to start is [https://developers.google.com/android/management/provision-device]
-* For NFC you must set all four WIFI entries appropriately, or omit the ...SSID entry completely.
-(Be sure you get ...HIDDEN correct; you can just remove it for the 'false' case.)
-* For NFC, omitting the ...SSID entry is a flag to set up WiFi manually. The other WiFi fields are ignored.
+on the Android documentation. A good place to start is [https://developers.google.com/android/management/provision-device](https://developers.google.com/android/management/provision-device)
+* For NFC you must set all four WIFI entries appropriately, or omit the `...SSID` entry completely.
+(Be sure you get `...HIDDEN` correct; you can just remove it for the 'false' case.)
+* For NFC, omitting the `...SSID` entry is a flag to set up WiFi manually. The other WiFi fields are ignored.
 (If the device doesn't show a place to add a hidden SSID, the 'more' button will help.)
-* For QR you should remove the _WIFI_ entries.
-If the ...SSID entry is present, it appears to re-enter the WiFi fields after the QR code is read.
+* For QR you should remove the `_WIFI_` entries.
+If the `...SSID` entry is present, it appears to re-enter the WiFi fields after the QR code is read.
 (I guess you could download the QR camera app from one network and then switch networks for the actual install...)
 * Be sure to remove the "enableDebug" line (and the prior comma) completely for deployed use.
 
-Note: It does work to provide a downloadable http[s] location for your Kiosk Mode .apk file.
+Note: It does work to provide a downloadable http\[s\] location for your Kiosk Mode .apk file.
+(But it's probably not worth the trouble.)
 Installing an application that way requires a number of clicks to get past all the protections
 that Android puts in the way of directly installing any .apk file.
 (Since this is a fresh device, you'll be doing _all_ the clicks for the first time.)
@@ -252,7 +263,7 @@ configuration and updates.
 ```
 {
 "android.app.extra.PROVISIONING_DEVICE_ADMIN_PACKAGE_DOWNLOAD_LOCATION":"http://yourLocalHost:4000/JekyllStuffDirectory/kioskInstaller-release.apk",
-"android.app.extra.PROVISIONING_DEVICE_ADMIN_SIGNATURE_CHECKSUM":"pENMk3hOipvxp1OsZF8sGLDofYEYtkJ-CBplAR30fCI",
+"android.app.extra.PROVISIONING_DEVICE_ADMIN_SIGNATURE_CHECKSUM":"8DbqqMigRdzjCmoM0z_L29JN28HkLQ718VWz-1V599Y",
 "android.app.extra.PROVISIONING_DEVICE_ADMIN_COMPONENT_NAME":"com.donnKey.kioskInstaller/com.donnKey.kioskInstaller.KioskInstallerDeviceAdmin",
 "android.app.extra.PROVISIONING_WIFI_HIDDEN":true,
 "android.app.extra.PROVISIONING_WIFI_SSID":"mySSID",
