@@ -17,7 +17,7 @@ Clicking "Reinstall" will install the application from the source named on the s
 It is difficult, but not impossible, to uninstall KioskInstaller from your device, and
 doing so has potential undesirable consequences.
 
-### <a name="uninstalling_it"> Uninstalling </a>
+### Uninstalling
 KioskInstaller is installed as a "Device Owner" application, which grants it special privileges.
 It's very difficult to regain the Device Owner privilege if you give it up.
 The documentation for your Kiosk Mode application should describe how to gain the privilege.
@@ -26,7 +26,7 @@ It probably requires either a Factory Reset (complete reset) of the device, or a
 If you do not intend to use the Kiosk Mode application that KioskInstaller displays on its screen,
 you can uninstall KioskInstaller if you really need the space. But it is a fairly small application.
 
-If you're not sure, do not uninstal it. It gives you the ability to restore the Kiosk Mode privilege to your
+If you're not sure, do not uninstall it. It gives you the ability to restore the Kiosk Mode privilege to your
 Kiosk Mode application should that be lost somehow.
 
 The Device Owner application is special: Android will not allow it to be removed.
