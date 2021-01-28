@@ -7,8 +7,8 @@ Google Play Store, and give it the permissions to be able to lock the screen int
 ### Background
 
 A Kiosk Mode application locks the screen so that you can't get out of the application, which is
-needed in certain business situations, or (in our case) if it is required to keep accidental  
-button pushes from causing a user (with possible physical or mental limitations)  
+needed in certain business situations, or (in our case) if it is required to keep accidental
+button pushes from causing a user (with possible physical or mental limitations)
 to effectively lose control of the device.
 
 To put an application into Kiosk Mode requires certain permissions. Those permissions are not easily granted.
@@ -21,7 +21,10 @@ PC/cables/software alternative. Thus this is a solution for "Dedicated Devices" 
 For many devices the permissions can be granted by using a special program called a DPC (Device Policy Controller),
 which must be installed just after a Factory Reset (but at no other time if you want the necessary permissions!).
 The DPC can be installed using NFC, or (on newer devices) QR codes (on devices with the appropriate hardware).
-The details for using the NFC sender app are on its web page. //?????????? (TBD NFC link)
+The details for using the NFC sender app (NFCProvisioning) are in its
+[GITHub account](https://github.com/DonnKey/enterprise-samples/tree/main/NfcProvisioning).
+(Although the GITHub project is enterprise-samples, each sample is a separate app.
+Just ignore the other samples.)
 Setting up QR codes is discussed below.
 Google provides this capability for business use, but it works fine for any application needing to use Kiosk mode
 on a device dedicated to the purpose.
@@ -33,8 +36,8 @@ You don't need to build a copy of this application if you want it as-is; an alre
 which can be found on this GitHub website. You can copy it to your own host to serve it when installing.
 
 This README is primarily for developers, since users really needn't be more than vaguely aware this program exists.
-The documentation for your application should provide the user-focused instructions.  
-You can find an example at
+The documentation for your application should provide the user-focused instructions.
+You can find an example
 [here](https://donnkey.github.io/aesopPlayer/install-dedicated.html).
 
 ## Usage Overview
@@ -46,7 +49,7 @@ When the device gets to the initial start screen, take an action to tell the dev
 install KioskInstaller which then "provisions" the device as needed.
 * For NFC installation you'll need another device running an application that provides the
 necessary information via NFC.
-You simply "bump" the devices to start things. (See this <???? (TBD)> NFC app for details.)
+You touch the devices together to start things. (See NFCProvisioning (link above) for more details.)
 * For QR installation tap the screen (in the same place, not on a button or text) 6 times to get into
 QR provisioning state.
 Work through the steps (to set up WiFi) and it will ultimately load a QR camera app.
@@ -69,6 +72,10 @@ Be sure to do the Factory Reset from the Settings screen if there are any accoun
 If you do it any other way, after the restart you will be required to authenticate to the device
 before it will boot. If you don't have the login information, the device becomes useless.
 There's more about FRP on the Web.
+
+Factory reset on some devices will cause it to appear to be doing nothing for
+several minutes. If it appears to hang in a splash screen give it several minutes.
+(The absence of a SIM card might make this behavior worse.)
 
 Note 2: Even if you don't intend to use NFC provisioning, just QR, you might want to set up the NFC
 application for your testing. It can save you the tedious process of re-entering the WiFi information for
@@ -130,7 +137,7 @@ revoke the Device Owner privilege.)
 
 ## Building it yourself
 
-You can of course take a branch and modify KioskInstaller as you wish.
+You can of course take a fork and modify KioskInstaller as you wish.
 Although it's a simple application, getting the setup to build and debug it is tricky
 because of the way it's downloaded and installed.
 
@@ -195,7 +202,7 @@ information for debugging can be painful each time you test it (particularly if 
 
 What enableDebug adds to the UI:
 * A view of the logcat data up to the moment that KioskInstaller's onCreate is run, scrollable and
-highlighted to find KioskInstaller lines; the logcat data starts as they system is booting.
+highlighted to find KioskInstaller lines; the logcat data starts as the system is booting.
 The "refresh" button rereads that data (to which the system has probably added more).
 It starts scrolled to the bottom-most line (where the recent action is).
 If there are only a few lines shown, use "refresh"; it's possible to get ahead of logcat's processing.
@@ -205,7 +212,7 @@ This is very handy when testing repeatedly.
 * A long-press of the "Refresh" button clears the log file of "really old" stuff, but the subsequent
 read of logcat will restore more recent entries.
 
-If you start KioskInstaller as an ordinary application (when installed using the debugMode),  
+If you start KioskInstaller as an ordinary application (when installed using the debugMode),
 you'll see the logcat data.
 You can customise what you see by changing the logcat command line filters,
 as well as the filtering and enhancement KioskInstaller does.
@@ -217,13 +224,13 @@ When testing, you can simply back out of the Play Store login, nothing prevents 
 If you do stop Play Store, and since an application which is not yet installed can be given lock privilege,
 you could then install a test version of your Kiosk Mode app which would have Lock Mode enabled.
 
-If the application crashes too early for this to work, creating Toasts can be helpful.
+If the application crashes too early for the display of logcat data to work, creating Toasts can be helpful.
 There's a commented source line to start that process if you need it.
 
 If the "important part" should crash with an unexpected error, it will enter a hybrid mode where the Wipe button
 is not available, but the logcat information is shown.
 
-Note: Device Owner and Lock Mode privileges historically might be handled as a single  
+Note: Device Owner and Lock Mode privileges historically might be handled as a single
 entity in a Kiosk Mode application. (An easy situation to get into when
 using PC/Cable mode only.)
 That won't be the case here, so you should test your Kiosk Mode app carefully
@@ -234,6 +241,8 @@ to see that they're appropriately separate.
 A complete sample JSON script appears below:
 * You can use `PROVISIONING_DEVICE_ADMIN_PACKAGE_CHECKSUM` instead of `PROVISIONING_DEVICE_ADMIN_SIGNATURE_CHECKSUM`
 if you wish to provide the .apk checksum.
+Note: the documentation says that the checksum used must be SHA1 for Lollipop and below, SHA256 for Q and above,
+and either for in-between. We're assuming SHA256 since Lollipop doesn't do this type of provisioning.
 * You need to change "yourLocalHost", "JekyllStuffDirectory", and the packageName and installLocation lines
 for all uses. Typically the installLocation would be a link into Play Store for your application.
 * You need to change the `...COMPONENT_NAME` line if you're building your own version.

@@ -145,6 +145,7 @@ public class KioskInstallerDeviceAdmin extends DeviceAdminReceiver {
         switch (checkPlayInstalled(context, packageName)) {
             case NOT_INSTALLED:
                 Intent i = new Intent(Intent.ACTION_VIEW, Uri.parse(installLocation));
+                i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 try {
                     context.startActivity(i);
                 } catch (ActivityNotFoundException e) {
